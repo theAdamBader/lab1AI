@@ -63,7 +63,7 @@ namespace Complete
                                                 Operator.IS_EQUAL, true,
                                                 Stops.IMMEDIATE_RESTART,
                             // Turn right toward target
-                            new Action(() => Turn(0.2f))),
+                            new Action(() => Turn(0.0f))),
                             // Turn left toward target
                             new Action(() => Turn(-0.2f))
                     )
@@ -76,8 +76,8 @@ namespace Complete
             Vector3 localPos = this.transform.InverseTransformPoint(targetPos);
             Vector3 heading = localPos.normalized;
             blackboard["targetDistance"] = localPos.magnitude;
-            blackboard["targetInFront"] = heading.z > 0;
-            blackboard["targetOnRight"] = heading.x > 0;
+            blackboard["targetInFront"] = heading.z > 2;
+            blackboard["targetOnRight"] = heading.x > 5;
             blackboard["targetOffCentre"] = Mathf.Abs(heading.x);
         }
 
