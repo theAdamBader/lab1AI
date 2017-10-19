@@ -27,6 +27,9 @@ namespace Complete
         }
 
         /* Actions */
+		private Node  StopMoving(){
+			return new Action(() => Move(0));
+		}
 
         private Node StopTurning() {
             return new Action(() => Turn(0));
@@ -37,15 +40,14 @@ namespace Complete
         }
 
 		private Node DefaultMove(){
-		return new Root(
-				new Service(0.2f, UpdatePerception,
+		return new Service(0.2f, UpdatePerception,
 					new Selector(
 						new BlackboardCondition("targetOffCentre",
 							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 							Stops.IMMEDIATE_RESTART,
 							// Stop turning and fire
 							new Sequence(StopTurning(),
-								new Wait(2f),
+								new Wait(0.5f),
 								RandomFire())),
 						new BlackboardCondition("targetOnRight",
 							Operator.IS_EQUAL, true,
@@ -55,7 +57,7 @@ namespace Complete
 						// Turn left toward target
 						new Action(() => Turn(-0.2f))
 					)
-				)
+	
 			);
 		}
 
@@ -81,14 +83,14 @@ namespace Complete
                             new Sequence(StopTurning(),
                                         new Wait(2f),
                                         RandomFire())),
-                        new BlackboardCondition("targetOnRight",
+						new BlackboardCondition("targetOnRight",
                                                 Operator.IS_EQUAL, true,
                                                 Stops.IMMEDIATE_RESTART,
                             // Turn right toward target
-                            new Action(() => Turn(0.2f))),
+       						new Action(() => Turn(0.2f))),
                             // Turn left toward target
-                            new Action(() => Turn(-0.2f))
-                    )
+							new Action(() => Turn(-0.2f))
+					)
                 )
             );
         }
