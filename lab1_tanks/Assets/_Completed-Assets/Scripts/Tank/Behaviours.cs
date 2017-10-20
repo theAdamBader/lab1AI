@@ -18,8 +18,7 @@ namespace Complete
 
                 case 1:
                     return SpinBehaviour(-0.05f, 1f);
-                case 2:
-                    return TrackBehaviour();
+          
 
                 default:
 				return new Root (DefaultMove());
@@ -71,29 +70,7 @@ namespace Complete
                     ));
         }
 
-        // Turn to face your opponent and fire
-        private Root TrackBehaviour() {
-            return new Root(
-                new Service(0.2f, UpdatePerception,
-                    new Selector(
-                        new BlackboardCondition("targetOffCentre",
-                                                Operator.IS_SMALLER_OR_EQUAL, 0.1f,
-                                                Stops.IMMEDIATE_RESTART,
-                            // Stop turning and fire
-                            new Sequence(StopTurning(),
-                                        new Wait(2f),
-                                        RandomFire())),
-						new BlackboardCondition("targetOnRight",
-                                                Operator.IS_EQUAL, true,
-                                                Stops.IMMEDIATE_RESTART,
-                            // Turn right toward target
-       						new Action(() => Turn(0.2f))),
-                            // Turn left toward target
-							new Action(() => Turn(-0.2f))
-					)
-                )
-            );
-        }
+        
 
         private void UpdatePerception() {
             Vector3 targetPos = TargetTransform().position;
