@@ -17,7 +17,12 @@ namespace Complete
 			switch (m_Behaviour) {
 
 			case 1:
-				return MovetoPlayer(); 
+				return FightMe(); 
+
+			case 2:
+				return ScaredyCat();
+			case 3:
+				return YouAreUnbelievable();
 
 			default:
 				return new Root (DefaultMove());
@@ -41,30 +46,32 @@ namespace Complete
 			return new Action(() => Turn(UnityEngine.Random.Range(1.0f, -1.0f)));
 		}
 
+		private Node RandomMove() {
+			return new Action(() => Move(UnityEngine.Random.Range(0.1f, -0.1f)));
+		}
+
 		private Node DefaultMove(){
 			return new Service(0.2f, UpdatePerception,
 				new Selector(
 					new BlackboardCondition("targetOffCentre",
 						Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 						Stops.IMMEDIATE_RESTART,
-						// Stop turning and fire
-						new Sequence(StopTurning(),
+						new Sequence(StopTurning(),//this child node allows to stop the turn and fire random from 1 to -1
 							new Wait(0.5f),
-							RandomFire())),
+							RandomFire())),//this function is called from the Node Random Fire
+					
 					new BlackboardCondition("targetOnRight",
-						Operator.IS_EQUAL, true,
+						Operator.IS_EQUAL, true,//if the targetOnRight is true then turn right towards the target
 						Stops.IMMEDIATE_RESTART,
-						// Turn right toward target
 						new Action(() => Turn(0.2f))),
-					// Turn left toward target
-					new Action(() => Turn(-0.2f))
+					
+					new Action(() => Turn(-0.2f))//else it will turn left towards the target
 				)
-
 			);
 		}
 
-
-		private Root MovetoPlayer()
+		//DONE
+		private Root FightMe()
 		{
 			return new Root(
 				new Service(0.2f, UpdatePerception,
@@ -76,19 +83,19 @@ namespace Complete
 							// Turn right toward target
 							new Sequence(StopMoving(),
 								new Wait(0.5f),
-								RandomTurn())),
+								new Action(() => Turn(1.0f)))),
 							
 						new BlackboardCondition("targetOffCentre",
 							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 							Stops.IMMEDIATE_RESTART,
 							// Stop turning and fire
 							new Sequence(StopTurning(),
-								new Wait(0.3f),
+								new Wait(0.8f),
 								RandomFire())),
 						
 						new BlackboardCondition("targetDistance",
-							Operator.IS_SMALLER_OR_EQUAL, 15.0f,
-							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
+							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
+							Stops.IMMEDIATE_RESTART,
 
 							new Action(() => Move(0.6f))),
 						
@@ -97,9 +104,9 @@ namespace Complete
 							Operator.IS_EQUAL, true,
 							Stops.IMMEDIATE_RESTART,
 							// Turn right toward target
-							new Action(() => Turn(0.3f))),
+							new Action(() => Turn(0.6f))),
 						// Turn left toward target
-						new Action(() => Turn(-0.3f))
+						new Action(() => Turn(-0.6f))
 
 
 					)
@@ -107,6 +114,85 @@ namespace Complete
 			);
 		}
 
+		private Root ScaredyCat()
+		{
+			return new Root(
+				new Service(0.2f, UpdatePerception,
+					new Selector(
+						
+
+						new BlackboardCondition("targetInFront",
+							Operator.IS_EQUAL, true,
+							Stops.IMMEDIATE_RESTART,
+							// Turn right toward target
+							new Sequence(new Action(() => Move(-0.4f)),
+								new Wait(1.3f),
+								new Action(() => Turn(0.2f)))),
+
+
+						new BlackboardCondition("targetDistance",
+							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
+							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
+
+							new Action(() => Move(0.8f))),
+						
+								
+						new BlackboardCondition("targetOnRight",
+							Operator.IS_EQUAL, true,//if the targetOnRight is true then turn right towards the target
+							Stops.IMMEDIATE_RESTART,
+							new Action(() => Turn(-0.2f))),
+
+						new Action(() => Turn(0.2f))//else it will turn left towards the target
+					)
+				)
+			);
+		}
+
+		private Root YouAreUnbelievable()
+		{
+			return new Root(
+				new Service(0.2f, UpdatePerception,
+					new Selector(
+						
+						new NPBehave.Random(0.8f,new BlackboardCondition("targetInFront",
+							Operator.IS_EQUAL, false,
+							Stops.IMMEDIATE_RESTART,
+							// Turn right toward target
+							new Sequence(StopMoving(),
+								new Wait(0.5f),
+								new Action(() => Turn(1.0f))))),
+
+
+						
+						new BlackboardCondition("targetOffCentre",
+							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
+							Stops.IMMEDIATE_RESTART,
+							// Stop turning and fire
+							new Sequence(StopTurning(),
+								new Wait(0.4f),
+								RandomFire())),
+
+
+						new BlackboardCondition("targetDistance",
+							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
+							Stops.IMMEDIATE_RESTART,
+
+							new Action(() => Move(0.8f))),
+
+
+						new BlackboardCondition("targetOnRight",
+							Operator.IS_EQUAL, true,
+							Stops.IMMEDIATE_RESTART,
+							// Turn right toward target
+							new Action(() => Turn(0.6f))),
+						// Turn left toward target
+						new Action(() => Turn(-0.6f))
+
+					
+					)
+				)
+			);
+		}
 
 		private void UpdatePerception() {
 			Vector3 targetPos = TargetTransform().position;
