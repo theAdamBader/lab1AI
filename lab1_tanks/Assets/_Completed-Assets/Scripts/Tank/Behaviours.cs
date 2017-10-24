@@ -81,7 +81,7 @@ namespace Complete
 							Operator.IS_EQUAL, false,
 							Stops.IMMEDIATE_RESTART,
 							// Turn right toward target
-							new Sequence(new Action(() => Move(0.6f)),
+							new Sequence(StopMoving(),
 								new Wait(0.5f),
 								new Action(() => Turn(1.0f)))),
 							
@@ -92,6 +92,12 @@ namespace Complete
 							new Sequence(StopTurning(),
 								new Wait(0.8f),
 								RandomFire())),
+						
+						new NPBehave.Random(0.05f,new BlackboardCondition("targetDistance",//5%
+							Operator.IS_SMALLER_OR_EQUAL, 50.0f,//if player is 40 pixels near the enemy then enemy moves
+							Stops.LOWER_PRIORITY,
+
+							new Action(() => Move(1.0f)))),
 						
 						new BlackboardCondition("targetDistance",
 							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
