@@ -18,7 +18,6 @@ namespace Complete
 
 			case 1:
 				return FightMe(); 
-
 			case 2:
 				return ScaredyCat();
 			case 3:
@@ -97,7 +96,9 @@ namespace Complete
 							Operator.IS_SMALLER_OR_EQUAL, 50.0f,//if player is 40 pixels near the enemy then enemy moves
 							Stops.LOWER_PRIORITY,
 
-							new Action(() => Move(1.0f)))),
+							new Sequence(new Action(() => Move(1.0f)),
+								new Wait(0.7f),
+								RandomFire()))),
 						
 						new BlackboardCondition("targetDistance",
 							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
@@ -180,7 +181,7 @@ namespace Complete
 							Operator.IS_SMALLER_OR_EQUAL, 10.0f,//if player is 10 pixels near the enemy then enemy moves
 							Stops.IMMEDIATE_RESTART,
 
-							new Action(() => Move(0.5f))),
+							new Action(() => Move(0.8f))),
 
 						new NPBehave.Random(0.8f,new BlackboardCondition("targetDistance",//5%
 							Operator.IS_SMALLER_OR_EQUAL, 40.0f,//if player is 40 pixels near the enemy then enemy moves
@@ -188,13 +189,13 @@ namespace Complete
 
 							new Action(() => Move(1.0f)))),
 						
-						new NPBehave.Random(0.15f,new BlackboardCondition("targetInFront",
+						new NPBehave.Random(0.35f,new BlackboardCondition("targetInFront",
 							Operator.IS_EQUAL, true,
 							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
 							// Turn right toward target
-							new Sequence(new Action(() => Move(-0.1f)),
+							new Sequence(new Action(() => Move(0.6f)),
 								new Wait(0.5f),
-								new Action(() => Turn(-0.1f))))),
+								new Action(() => Turn(0.6f))))),
 
 						new BlackboardCondition("targetOnRight",
 							Operator.IS_EQUAL, true,
