@@ -37,6 +37,10 @@ namespace Complete
 			return new Action(() => Turn(0));
 		}
 
+		private Node NoFire() {
+			return new Action(() => Fire(0));
+		}
+
 		private Node RandomFire() {
 			return new Action(() => Fire(UnityEngine.Random.Range(0.0f, 1.0f)));
 		}
@@ -83,13 +87,13 @@ namespace Complete
 							new Sequence(StopMoving(),
 								new Wait(0.5f),
 								new Action(() => Turn(1.0f)))),
-							
+			
 						new BlackboardCondition("targetOffCentre",
 							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 							Stops.IMMEDIATE_RESTART,
 							// Stop turning and fire
 							new Sequence(StopTurning(),
-								new Wait(0.8f),
+								new Wait(0.1f),
 								RandomFire())),
 						
 						new NPBehave.Random(0.05f,new BlackboardCondition("targetDistance",//5%
@@ -126,22 +130,27 @@ namespace Complete
 			return new Root(
 				new Service(0.2f, UpdatePerception,
 					new Selector(
-						
 
 						new BlackboardCondition("targetInFront",
 							Operator.IS_EQUAL, true,
 							Stops.IMMEDIATE_RESTART,
 							// Turn right toward target
 							new Sequence(new Action(() => Move(-0.4f)),
-								new Wait(1.3f),
+								new Wait(1.2f),
 								new Action(() => Turn(0.2f)))),
-
-
+						
 						new BlackboardCondition("targetDistance",
 							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
-							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
+							Stops.IMMEDIATE_RESTART,
 
 							new Action(() => Move(0.8f))),
+
+						new NPBehave.Random(0.15f,new BlackboardCondition("targetDistance",//5%
+							Operator.IS_SMALLER_OR_EQUAL, 20.0f,//if player is 40 pixels near the enemy then enemy moves
+							Stops.LOWER_PRIORITY,
+
+							new Action(() => Move(1.0f)))),
+								
 						
 								
 						new BlackboardCondition("targetOnRight",
@@ -161,41 +170,46 @@ namespace Complete
 				new Service(0.2f, UpdatePerception,
 					new Selector(
 
-					new BlackboardCondition("targetInFront",
+						new BlackboardCondition("targetInFront",
 							Operator.IS_EQUAL, false,
 							Stops.IMMEDIATE_RESTART,	//if false then when player is behind enemy then enemy turns around
 							// Turn right toward target
-								new Sequence(StopMoving(),
+							new Sequence(StopMoving(),
 								new Wait(0.5f),
 								new Action(() => Turn(1.0f)))),
-												
+
 						new BlackboardCondition("targetOffCentre",
 							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
 							// Stop turning and fire
 							new Sequence(StopTurning(),
-								new Wait(1.0f),//wait a second
-								RandomFire())),
+								new Wait(1.0f))),//wait a second
+								//RandomFire())),
 
 						new BlackboardCondition("targetDistance",
 							Operator.IS_SMALLER_OR_EQUAL, 10.0f,//if player is 10 pixels near the enemy then enemy moves
 							Stops.IMMEDIATE_RESTART,
 
-							new Action(() => Move(0.8f))),
+							new Sequence(new Action(() => Move(0.5f)),
+								//new Wait(0.1f),
+								RandomFire())),
 
 						new NPBehave.Random(0.8f,new BlackboardCondition("targetDistance",//5%
 							Operator.IS_SMALLER_OR_EQUAL, 40.0f,//if player is 40 pixels near the enemy then enemy moves
 							Stops.LOWER_PRIORITY,
 
-							new Action(() => Move(1.0f)))),
-						
-						new NPBehave.Random(0.35f,new BlackboardCondition("targetInFront",
+							new Sequence(new Action(() => Move(0.5f)),
+								//new Wait(0.1f),
+								RandomFire()))),
+							
+
+						new NPBehave.Random(0.15f,new BlackboardCondition("targetInFront",
 							Operator.IS_EQUAL, true,
 							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
 							// Turn right toward target
-							new Sequence(new Action(() => Move(0.6f)),
+							new Sequence(new Action(() => Move(-0.1f)),
 								new Wait(0.5f),
-								new Action(() => Turn(0.6f))))),
+								new Action(() => Turn(-0.1f))))),
 
 						new BlackboardCondition("targetOnRight",
 							Operator.IS_EQUAL, true,
@@ -203,7 +217,7 @@ namespace Complete
 							// Turn right toward target
 							new Action(() => Turn(0.6f))),
 						// Turn left toward target
-						new Action(() => Turn(-0.6f))			
+						new Action(() => Turn(-0.6f))
 					)
 				)
 			);
