@@ -182,7 +182,7 @@ namespace Complete
 		//third blackboard checks if the target is close, if so then moves less slower than the forth condition and randomly fires
 		//forth blackboard detects if the target is at a certain point and moves faster than the third condition however this node is active at random, probablity at 45%, and using BOTH function,which uses both low priority and self, it checks the condition to see if it is met or not
 		//fifth blackboard detects if their any object, including the target, in front in which it reverses to avoid collision but as it is set to a low priority immediate restart it would met the condition to move to the next node but let the parent restart the condition
-		//fifth blackboard checks if the target is on the right then move right else move left
+		//sixth blackboard checks if the target is on the right then move right else move left
 		private Root YouAreUnbelievable()
 		{
 			return new Root(
